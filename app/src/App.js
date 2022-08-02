@@ -135,11 +135,11 @@ const App = () => {
           <Col isFullWidth style={{ marginLeft: "3rem", marginRight: "3rem" }}>
             <hr style={{ borderTop: "1px solid rgb(0 0 0 / 8%)" }} />
           </Col>
-          <Col isFullWidth style={{ margin: "3rem" }}>
+          { <Col isFullWidth style={{ margin: "3rem" }}>
             {data?.map((nft) => {
               return <SolanaNFTCard chain={chain} nftAddress={nft?.mint} />;
             })}
-          </Col>
+          </Col> }
         </>
       ) : (
         <>

@@ -1,0 +1,55 @@
+GITHUB PERSONAL ACCESS TOKEN 
+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
+
+Public Key
+GTBpw1TAqG35YUsdTe18hq1To8cLyFEtHdNUJA1ZMiyF
+
+solana-keygen new -o /home/gabster/.config/solana/id.json
+instead of 
+solana-keygen new --outfile ~/.config/solana/devnet.json
+
+VERIFY ASSETS
+ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts verify_assets ./js/packages/cli/example-assets/
+
+CREATE CANDY MACHINE (stored in ARWEAVE)
+The command also outputs the Candy Machine PublicKey, which you can verify on the Solana Explorer.
+ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli//src/candy-machine-v2-cli.ts upload \
+    -e devnet \
+    -k ~/.config/solana/id.json \
+    -cp ./js/packages/cli/example-candy-machine-upload-config.json \
+    -c example \
+    ./js/packages/cli/example-assets/
+    
+SET ON CHAIN COLLECTION (token metadate)
+ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts set_collection \
+    -e devnet \
+    -k ~/.config/solana/id.json \
+    -c example \
+    
+VERIFY UPLOAD
+ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts verify_upload \
+    -e devnet \
+    -k ~/.config/solana/id.json \
+    -c example \
+    
+    
+MINT ONE TOKEN
+ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts mint_one_token \
+    -e devnet \
+    -k ~/.config/solana/id.json \
+    -c example \
+    
+MINT MULTIPLE TOKENS
+ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens \
+    -e devnet \
+    -k ~/.config/solana/id.json \
+    -c example \
+    --number 3
+    
+    
+    
+    
+    
+    
+    
+    
