@@ -550,12 +550,17 @@ programCommand('verify_upload')
     );
     let allGood = true;
 
+    console.log(cacheContent.items);
+
     const keys = Object.keys(cacheContent.items)
       .filter(k => !cacheContent.items[k].verifyRun)
       .sort((a, b) => Number(a) - Number(b));
 
     if (keys.length > 0) {
       log.info(`Checking ${keys.length} items that have yet to be checked...`);
+    } else {
+      // Kiril
+      log.info('keys.length === 0, which seems like a bad thing');
     }
     await Promise.all(
       chunks(keys, 500).map(async allIndexesInSlice => {

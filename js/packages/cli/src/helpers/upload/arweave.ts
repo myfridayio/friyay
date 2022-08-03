@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import log from 'loglevel';
 import fetch from 'node-fetch';
+// import { promises } from 'fs'
+
 import { stat } from 'fs/promises';
 import { calculate } from '@metaplex/arweave-cost';
 import { ARWEAVE_PAYMENT_WALLET } from '../constants';

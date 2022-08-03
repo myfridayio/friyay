@@ -1,10 +1,10 @@
 {
   "name": "1",
   "symbol": "",
-  "text": "text.txt"
+  "image": "0.png",
   "properties": {
-    "files": [{ "uri": "0.txt", "type": "text/txt" }],
-    "category": "text",
+    "files": [{ "uri": "0.png", "type": "image/png" }],
+    "category": "image",
     "creators": [
       {
         "address": "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",

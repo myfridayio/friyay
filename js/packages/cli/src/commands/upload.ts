@@ -1,5 +1,7 @@
 import * as cliProgress from 'cli-progress';
-import { readFile } from 'fs/promises';
+import { promises } from 'fs';
+const { readFile } = promises;
+// import { readFile } from 'fs/promises';
 import path from 'path';
 import log from 'loglevel';
 import {
@@ -367,11 +369,13 @@ export async function uploadV2({
               animation ? link && imageLink && animationLink : link && imageLink
             ) {
               log.debug('Updating cache for ', asset.index);
+              // Kiril - tried this, I think we're too far upstream here, messes up verification
+              // link = `http://myfriday.io/huerhodesrules.${asset.index}`
               cacheContent.items[asset.index] = {
                 link,
                 imageLink,
                 name: manifest.name,
-                onChain: false,
+                onChain: false, // whuh?
               };
               saveCache(cacheName, env, cacheContent);
             }

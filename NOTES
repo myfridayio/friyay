@@ -13,34 +13,34 @@ ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy
 
 CREATE CANDY MACHINE (stored in ARWEAVE)
 The command also outputs the Candy Machine PublicKey, which you can verify on the Solana Explorer.
-ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli//src/candy-machine-v2-cli.ts upload \
+ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload \
     -e devnet \
     -k ~/.config/solana/id.json \
-    -cp ./js/packages/cli/example-candy-machine-upload-config.json \
+    -cp ./packages/cli/example-candy-machine-upload-config.json \
     -c example \
-    ./js/packages/cli/example-assets/
+    ./packages/cli/example-assets/
     
 SET ON CHAIN COLLECTION (token metadate)
-ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts set_collection \
+ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection \
     -e devnet \
     -k ~/.config/solana/id.json \
-    -c example \
+    -c example
     
 VERIFY UPLOAD
-ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts verify_upload \
+ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload \
     -e devnet \
     -k ~/.config/solana/id.json \
-    -c example \
+    -c example
     
     
 MINT ONE TOKEN
-ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts mint_one_token \
+ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token \
     -e devnet \
     -k ~/.config/solana/id.json \
-    -c example \
+    -c example
     
 MINT MULTIPLE TOKENS
-ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens \
+ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens \
     -e devnet \
     -k ~/.config/solana/id.json \
     -c example \
