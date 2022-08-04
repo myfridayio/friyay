@@ -97,6 +97,7 @@ export async function setCollection(
         ),
       ],
     );
+    // HERE: construction of NFT metadata, maybe? why is url ''?
     const data = new DataV2({
       symbol: candyMachine.data.symbol ?? '',
       name: 'Collection NFT',

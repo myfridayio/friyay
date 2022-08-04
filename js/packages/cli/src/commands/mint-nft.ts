@@ -177,6 +177,9 @@ export const mintNFT = async (
     use,
   );
   if (!data) return;
+  // HERE debugging
+  log.info('mintNFT: metadataLink=', metadataLink);
+  log.info('mintNFT: data=', data);
 
   // Create wallet from keypair
   const wallet = new anchor.Wallet(walletKeypair);
