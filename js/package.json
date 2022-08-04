@@ -25,7 +25,13 @@
     "deploy": "run-s deploy:docs build deploy:apps && gh-pages -d docs",
     "deploy:docs": "lerna run docs",
     "deploy:apps": "lerna run deploy:app",
-    "test": "lerna run test --concurrency 1 --stream"
+    "test": "lerna run test --concurrency 1 --stream",
+    "verifyAssets": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_assets ./packages/cli/example-assets/",
+    "uploadAssets": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/id.json -cp ./packages/cli/example-candy-machine-upload-config.json -c example ./packages/cli/example-assets/",
+    "collect": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ~/.config/solana/id.json -c example",
+    "verifyUpload": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ~/.config/solana/id.json -c example",
+    "mintOne": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ~/.config/solana/id.json -c example",
+    "mintMany": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens -e devnet -k ~/.config/solana/id.json -c example --number 3"
   },
   "lint-staged": {
     "packages/*/{src,test}/**/*.{ts,tsx}": [
