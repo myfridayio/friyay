@@ -10,7 +10,13 @@
     "format:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "lint:check": "eslint \"src/**/*.ts\"",
-    "test": "jest"
+    "test": "jest",
+    "verifyAssets": "ts-node /home/gabster/metaplex/moralis-solana-metaplex/js/packages/cli/src/candy-machine-v2-cli.ts verify_assets ./js/packages/cli/example-assets/",
+    "uploadAssets": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/id.json -cp ./packages/cli/example-candy-machine-upload-config.json -c example ./packages/cli/example-assets/",
+    "collect": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ~/.config/solana/id.json -c example",
+    "verifyUpload": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ~/.config/solana/id.json -c example",
+    "mintOne": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ~/.config/solana/id.json -c example",
+    "mintMany": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens -e devnet -k ~/.config/solana/id.json -c example --number 3"
   },
   "pkg": {
     "scripts": "./build/**/*.{js|json}"
