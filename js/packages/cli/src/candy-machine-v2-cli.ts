@@ -999,8 +999,8 @@ programCommand('mint_one_token')
 
     const cacheContent = loadCache(cacheName, env);
     log.info('Minting using cacheContent:', cacheContent);
-    const candyMachine = new PublicKey(cacheContent.program.candyMachine);
-    const tx = await mintV2(keypair, env, candyMachine, rpcUrl);
+    const candyMachineKey = new PublicKey(cacheContent.program.candyMachine);
+    const tx = await mintV2(keypair, env, candyMachineKey, rpcUrl);
 
     log.info('mint_one_token finished', tx);
   });

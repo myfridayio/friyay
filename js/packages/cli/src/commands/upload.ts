@@ -108,7 +108,7 @@ export async function uploadV2({
   rpcUrl: null | string;
   resetCandyMachine: boolean;
 }): Promise<boolean> {
-  const savedContent = loadCache(cacheName, env);
+  const savedContent = resetCandyMachine ? {} : loadCache(cacheName, env);
   const cacheContent = savedContent || {};
 
   if (!cacheContent.program) {

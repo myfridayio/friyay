@@ -168,7 +168,7 @@ export async function mintV2(
   rpcUrl: string,
 ): Promise<string> {
   const mint = Keypair.generate();
-
+  log.info('keypair is', keypair);
   const userKeyPair = loadWalletKey(keypair);
   const anchorProgram = await loadCandyProgramV2(userKeyPair, env, rpcUrl);
   const userTokenAccountAddress = await getTokenWallet(
@@ -184,7 +184,7 @@ export async function mintV2(
   const cleanupInstructions = [];
   const instructions = [
     anchor.web3.SystemProgram.createAccount({
-      fromPubkey: userKeyPair.publicKey,
+      fromPubkey: userKeyPair.publicKey, // our wallet keypair
       newAccountPubkey: mint.publicKey,
       space: MintLayout.span,
       lamports:
@@ -231,6 +231,7 @@ export async function mintV2(
     });
 
     if (candyMachine.data.whitelistMintSettings.mode.burnEveryTime) {
+      log.info('burnEveryTime: adding addtl instructions');
       const whitelistBurnAuthority = anchor.web3.Keypair.generate();
 
       remainingAccounts.push({
@@ -272,6 +273,9 @@ export async function mintV2(
 
   let tokenAccount;
   if (candyMachine.tokenMint) {
+    log.info(
+      'tokenMint is truthy, pushing createApproveInstruction and adding transfer authority additional signer',
+    );
     const transferAuthority = anchor.web3.Keypair.generate();
 
     tokenAccount = await getTokenWallet(
@@ -329,7 +333,7 @@ export async function mintV2(
         //@ts-ignore
         wallet: candyMachine.wallet,
         mint: mint.publicKey,
-        metadata: metadataAddress,
+        metadata: metadataAddress, // HERE: it's the metadataAddress that's used to do the minting...
         masterEdition,
         mintAuthority: userKeyPair.publicKey,
         updateAuthority: userKeyPair.publicKey,

@@ -3,7 +3,7 @@ Mint Process
 ============
 
 yarn verifyAssets # what it says
-yarn uploadAssets # creates the CandyMachine if first time
+yarn uploadAssets # creates the CandyMachine if first time (or if you pass --reset-candy-machine)
 yarn collect # dunno
 yarn verifyUpload # what it says?
 yarn mintOne # makes the NFT
