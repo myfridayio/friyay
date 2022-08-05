@@ -105,6 +105,7 @@ programCommand('upload')
     '-r, --rpc-url <string>',
     'custom rpc url since this is a heavy command',
   )
+  .option('-rcm, --reset-candy-machine', 'reset the Candy Machine')
   .option(
     '-rl, --rate-limit <number>',
     'max number of concurrent requests for the write indices command',
@@ -129,6 +130,7 @@ programCommand('upload')
       rateLimit,
       collectionMint,
       setCollectionMint,
+      resetCandyMachine,
     } = cmd.opts();
 
     if (!CLUSTERS.some(cluster => cluster.name === env)) {
@@ -272,6 +274,8 @@ programCommand('upload')
       walletKeyPair,
     );
 
+    console.log('resetCandyMachine', resetCandyMachine);
+
     const startMs = Date.now();
     log.info('started at: ' + startMs.toString());
     try {
@@ -306,6 +310,7 @@ programCommand('upload')
         collectionMintPubkey,
         setCollectionMint,
         rpcUrl,
+        resetCandyMachine: resetCandyMachine || false,
       });
     } catch (err) {
       log.warn('upload was not successful, please re-run.', err);
@@ -993,6 +998,7 @@ programCommand('mint_one_token')
     const { keypair, env, cacheName, rpcUrl } = cmd.opts();
 
     const cacheContent = loadCache(cacheName, env);
+    log.info('Minting using cacheContent:', cacheContent);
     const candyMachine = new PublicKey(cacheContent.program.candyMachine);
     const tx = await mintV2(keypair, env, candyMachine, rpcUrl);
 

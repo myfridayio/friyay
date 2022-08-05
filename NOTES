@@ -1,3 +1,25 @@
+
+Mint Process
+============
+
+yarn verifyAssets # what it says
+yarn uploadAssets # creates the CandyMachine if first time
+yarn collect # dunno
+yarn verifyUpload # what it says?
+yarn mintOne # makes the NFT
+
+Internals
+=========
+
+.cache/[devnet]-example.json
+
+
+
+
+
+/// -----
+
+
 GITHUB PERSONAL ACCESS TOKEN 
 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
 

@@ -62,6 +62,7 @@ export async function uploadV2({
   collectionMintPubkey,
   setCollectionMint,
   rpcUrl,
+  resetCandyMachine,
 }: {
   files: string[];
   cacheName: string;
@@ -105,6 +106,7 @@ export async function uploadV2({
   collectionMintPubkey: null | PublicKey;
   setCollectionMint: boolean;
   rpcUrl: null | string;
+  resetCandyMachine: boolean;
 }): Promise<boolean> {
   const savedContent = loadCache(cacheName, env);
   const cacheContent = savedContent || {};
@@ -123,7 +125,7 @@ export async function uploadV2({
     ? new PublicKey(cacheContent.program.candyMachine)
     : undefined;
 
-  if (!cacheContent.program.uuid) {
+  if (resetCandyMachine || !cacheContent.program.uuid) {
     const firstAssetManifest = getAssetManifest(dirname, '0');
 
     try {
