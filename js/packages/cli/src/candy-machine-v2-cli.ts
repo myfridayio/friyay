@@ -546,37 +546,44 @@ programCommand('verify_upload')
     const walletKeyPair = loadWalletKey(keypair);
     const anchorProgram = await loadCandyProgramV2(walletKeyPair, env, rpcUrl);
 
-    const candyMachine = await anchorProgram.provider.connection.getAccountInfo(
-      new PublicKey(cacheContent.program.candyMachine),
+    const candyMachineKey = new PublicKey(cacheContent.program.candyMachine);
+
+    const candyMachineInfo =
+      await anchorProgram.provider.connection.getAccountInfo(candyMachineKey);
+    const candyMachine = await anchorProgram.account.candyMachine.fetch(
+      candyMachineKey,
     );
 
-    const candyMachineObj = await anchorProgram.account.candyMachine.fetch(
-      new PublicKey(cacheContent.program.candyMachine),
-    );
     let allGood = true;
 
     console.log(cacheContent.items);
 
-    const keys = Object.keys(cacheContent.items)
-      .filter(k => !cacheContent.items[k].verifyRun)
+    const keys = Object.keys(cacheContent.items);
+    const unverifiedKeys = keys
+      .filter(k => !cacheContent.items[k].verified)
       .sort((a, b) => Number(a) - Number(b));
 
-    if (keys.length > 0) {
-      log.info(`Checking ${keys.length} items that have yet to be checked...`);
+    if (unverifiedKeys.length > 0) {
+      log.info(
+        `Checking ${unverifiedKeys.length} / ${keys.length} items that have yet to be checked...`,
+      );
     } else {
       // Kiril
-      log.info('keys.length === 0, which seems like a bad thing');
+      log.info(
+        `No unverified keys present in config (of ${keys.length} total)`,
+      );
     }
+
     await Promise.all(
-      chunks(keys, 500).map(async allIndexesInSlice => {
-        for (let i = 0; i < allIndexesInSlice.length; i++) {
+      chunks(unverifiedKeys, 500).map(async keysSlice => {
+        for (let i = 0; i < keysSlice.length; i++) {
           // Save frequently.
           if (i % 100 == 0) saveCache(cacheName, env, cacheContent);
 
-          const key = allIndexesInSlice[i];
+          const key = keysSlice[i];
           log.info('Looking at key ', key);
 
-          const thisSlice = candyMachine.data.slice(
+          const thisSlice = candyMachineInfo.data.slice(
             CONFIG_ARRAY_START_V2 + 4 + CONFIG_LINE_SIZE_V2 * key,
             CONFIG_ARRAY_START_V2 + 4 + CONFIG_LINE_SIZE_V2 * (key + 1),
           );
@@ -591,14 +598,12 @@ programCommand('verify_upload')
 
           if (name != cacheItem.name || uri != cacheItem.link) {
             log.debug(
-              `Name (${name}) or uri (${uri}) didnt match cache values of (${cacheItem.name})` +
-                `and (${cacheItem.link}). marking to rerun for image`,
-              key,
+              `${key}: (${name}) & (${uri}) != cached (${cacheItem.name}) & (${cacheItem.link}). marking for rerun`,
             );
             cacheItem.onChain = false;
             allGood = false;
           } else {
-            cacheItem.verifyRun = true;
+            cacheItem.verified = true;
           }
         }
       }),
@@ -606,27 +611,30 @@ programCommand('verify_upload')
 
     if (!allGood) {
       saveCache(cacheName, env, cacheContent);
-
       throw new Error(
         `not all NFTs checked out. check out logs above for details`,
       );
     }
 
     const lineCount = new anchor.BN(
-      candyMachine.data.slice(CONFIG_ARRAY_START_V2, CONFIG_ARRAY_START_V2 + 4),
+      candyMachineInfo.data.slice(
+        CONFIG_ARRAY_START_V2,
+        CONFIG_ARRAY_START_V2 + 4,
+      ),
       undefined,
       'le',
     );
 
     log.info(
       `uploaded (${lineCount.toNumber()}) out of (${
-        candyMachineObj.data.itemsAvailable
+        candyMachine.data.itemsAvailable
       })`,
     );
-    if (candyMachineObj.data.itemsAvailable > lineCount.toNumber()) {
+
+    if (candyMachine.data.itemsAvailable > lineCount.toNumber()) {
       throw new Error(
         `predefined number of NFTs (${
-          candyMachineObj.data.itemsAvailable
+          candyMachine.data.itemsAvailable
         }) is smaller than the uploaded one (${lineCount.toNumber()})`,
       );
     } else {
@@ -852,10 +860,10 @@ programCommand('update_candy_machine')
     const walletKeyPair = loadWalletKey(keypair);
     const anchorProgram = await loadCandyProgramV2(walletKeyPair, env, rpcUrl);
 
-    const candyMachine = new PublicKey(cacheContent.program.candyMachine);
+    const candyMachineKey = new PublicKey(cacheContent.program.candyMachine);
 
-    const candyMachineObj = await anchorProgram.account.candyMachine.fetch(
-      candyMachine,
+    const candyMachine = await anchorProgram.account.candyMachine.fetch(
+      candyMachineKey,
     );
 
     const {
@@ -876,10 +884,10 @@ programCommand('update_candy_machine')
     const newSettings = {
       itemsAvailable: number
         ? new anchor.BN(number)
-        : candyMachineObj.data.itemsAvailable,
-      uuid: uuid || candyMachineObj.data.uuid,
-      symbol: candyMachineObj.data.symbol,
-      sellerFeeBasisPoints: candyMachineObj.data.sellerFeeBasisPoints,
+        : candyMachine.data.itemsAvailable,
+      uuid: uuid || candyMachine.data.uuid,
+      symbol: candyMachine.data.symbol,
+      sellerFeeBasisPoints: candyMachine.data.sellerFeeBasisPoints,
       isMutable: mutable,
       maxSupply: new anchor.BN(0),
       retainAuthority: retainAuthority,
@@ -889,7 +897,7 @@ programCommand('update_candy_machine')
       price,
       whitelistMintSettings,
       hiddenSettings,
-      creators: candyMachineObj.data.creators.map(creator => {
+      creators: candyMachine.data.creators.map(creator => {
         return {
           address: new PublicKey(creator.address),
           verified: true,
@@ -950,7 +958,7 @@ programCommand('set_collection')
     const { keypair, env, cacheName, rpcUrl, collectionMint } = cmd.opts();
 
     const cacheContent = loadCache(cacheName, env);
-    const candyMachine = new PublicKey(cacheContent.program.candyMachine);
+    const candyMachineKey = new PublicKey(cacheContent.program.candyMachine);
     const walletKeyPair = loadWalletKey(keypair);
     const anchorProgram = await loadCandyProgramV2(walletKeyPair, env, rpcUrl);
     const collectionMintPubkey = await parseCollectionMintPubkey(
@@ -961,7 +969,7 @@ programCommand('set_collection')
     const tx = await setCollection(
       walletKeyPair,
       anchorProgram,
-      candyMachine,
+      candyMachineKey,
       collectionMintPubkey,
     );
 

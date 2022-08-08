@@ -11,7 +11,7 @@ yarn mintOne # makes the NFT
 Internals
 =========
 
-.cache/[devnet]-example.json
+.cache/[devnet]-[example].json
 
 
 

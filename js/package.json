@@ -26,14 +26,13 @@
     "deploy:docs": "lerna run docs",
     "deploy:apps": "lerna run deploy:app",
     "test": "lerna run test --concurrency 1 --stream",
-    "tsnode:version": "ts-node -vv",
-    "tsnode:which": "which ts-node",
-    "verifyAssets": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_assets ./packages/cli/example-assets/",
-    "uploadAssets": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/id.json -cp ./packages/cli/example-candy-machine-upload-config.json -c example ./packages/cli/example-assets/",
-    "collect": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ~/.config/solana/id.json -c example",
-    "verifyUpload": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ~/.config/solana/id.json -c example",
-    "mintOne": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ~/.config/solana/id.json -c example",
-    "mintMany": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens -e devnet -k ~/.config/solana/id.json -c example --number 3"
+    "candy:verifyAssets": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_assets ./packages/cli/example-assets/",
+    "candy:upload": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/id.json -cp ./packages/cli/example-candy-machine-upload-config.json -c example ./packages/cli/example-assets/",
+    "candy:collect": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ~/.config/solana/id.json -c example",
+    "candy:verifyUpload": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ~/.config/solana/id.json -c example",
+    "candy:mintOne": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ~/.config/solana/id.json -c example",
+    "candy:show": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts show -e devnet -k ~/.config/solana/id.json -c example",
+    "candy:mintMany": "ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_multiple_tokens -e devnet -k ~/.config/solana/id.json -c example --number"
   },
   "lint-staged": {
     "packages/*/{src,test}/**/*.{ts,tsx}": [

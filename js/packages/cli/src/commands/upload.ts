@@ -108,8 +108,7 @@ export async function uploadV2({
   rpcUrl: null | string;
   resetCandyMachine: boolean;
 }): Promise<boolean> {
-  const savedContent = resetCandyMachine ? {} : loadCache(cacheName, env);
-  const cacheContent = savedContent || {};
+  const cacheContent = resetCandyMachine ? {} : loadCache(cacheName, env) || {};
 
   if (!cacheContent.program) {
     cacheContent.program = {};
@@ -370,7 +369,7 @@ export async function uploadV2({
             if (
               animation ? link && imageLink && animationLink : link && imageLink
             ) {
-              log.debug('Updating cache for ', asset.index);
+              log.debug('Updating cache for ', asset.index, link, imageLink);
               // Kiril - tried this, I think we're too far upstream here, messes up verification
               // link = `http://myfriday.io/huerhodesrules.${asset.index}`
               cacheContent.items[asset.index] = {
@@ -592,7 +591,7 @@ async function writeIndices({
       cacheContent.items[keys[i]] = {
         ...cacheContent.items[keys[i]],
         onChain: true,
-        verifyRun: false,
+        verified: false,
       };
     });
     saveCache(cacheName, env, cacheContent);
