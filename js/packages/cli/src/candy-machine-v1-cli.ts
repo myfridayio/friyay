@@ -169,24 +169,24 @@ programCommand('update_config_account')
       }
     });
 
-    const jsonFileCount = files.filter(it => {
-      return it.endsWith(EXTENSION_JSON);
-    }).length;
+    // const jsonFileCount = files.filter(it => {
+    //   return it.endsWith(EXTENSION_JSON);
+    // }).length;
 
     const parsedNumber = parseInt(number);
     const elemCount = parsedNumber ? parsedNumber : imageFileCount;
 
-    if (imageFileCount !== jsonFileCount) {
-      throw new Error(
-        `number of image files (${imageFileCount}) is different than the number of json files (${jsonFileCount})`,
-      );
-    }
+    //if (imageFileCount !== jsonFileCount) {
+    //throw new Error(
+    //`number of image files (${imageFileCount}) is different than the number of json files (${jsonFileCount})`,
+    //  );
+    //}
 
-    if (elemCount < imageFileCount) {
-      throw new Error(
-        `max number (${elemCount})cannot be smaller than the number of elements in the source folder (${imageFileCount})`,
-      );
-    }
+    // if (elemCount < imageFileCount) {
+    //   throw new Error(
+    //     `max number (${elemCount})cannot be smaller than the number of elements in the source folder (${imageFileCount})`,
+    //   );
+    // }
 
     log.info(`Beginning the upload for ${elemCount} (image+json) pairs`);
 

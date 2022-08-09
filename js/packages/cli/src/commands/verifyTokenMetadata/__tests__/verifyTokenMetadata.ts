@@ -8,7 +8,7 @@ import {
   verifyConsistentShares,
   verifyCreatorCollation,
 } from '../index';
-import { EXTENSION_PNG } from '../../../helpers/constants';
+import { EXTENSION_TXT} from '../../../helpers/constants';
 import { jest } from '@jest/globals';
 
 const getFiles = rootDir => {
@@ -40,8 +40,12 @@ describe('`metaplex verify_token_metadata`', () => {
     it(`invalidates ${path.relative(__dirname, invalidSchema)}`, () => {
       expect(() =>
         verifyTokenMetadata({
-          files: [invalidSchema, invalidSchema.replace('.json', EXTENSION_PNG)],
-        }),
+          //files: [invalidSchema, invalidSchema.replace('.json', EXTENSION_PNG)],
+          files: [invalidSchema, invalidSchema.replace('.json', EXTENSION_TXT)],
+        }), 
+        
+
+      
       ).toThrowErrorMatchingSnapshot();
     });
   });
@@ -91,10 +95,16 @@ describe('`metaplex verify_token_metadata`', () => {
     );
   });
 
+  // it('warns when using different image URIs', () => {
+  //   verifyImageURL(
+  //     'https://google.com?ext=png',
+  //     [{ uri: 'https://google.com?ext=png', type: 'image/png' }],
+  //     '0.json',
+  //   );
   it('warns when using different image URIs', () => {
     verifyImageURL(
-      'https://google.com?ext=png',
-      [{ uri: 'https://google.com?ext=png', type: 'image/png' }],
+      'https://google.com?ext=txt',
+      [{ uri: 'https://google.com?ext=txt', type: 'text/txt' }],
       '0.json',
     );
     expect(spy).toHaveBeenCalledTimes(1);

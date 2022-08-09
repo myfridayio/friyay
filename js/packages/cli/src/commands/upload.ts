@@ -307,7 +307,11 @@ export async function uploadV2({
         .process(async asset => {
           const manifest = getAssetManifest(
             dirname,
-            asset.index.includes('json') ? asset.index : `${asset.index}.json`,
+            asset.index.includes('json')
+              ? asset.index
+              : `${asset.index}.json` || asset.index.includes('.txt')
+              ? asset.index
+              : `${asset.index}.txt`,
           );
 
           const image = path.join(dirname, `${manifest.image}`);

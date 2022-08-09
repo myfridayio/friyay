@@ -113,6 +113,7 @@ export const EXTENSION_WAV = '.wav';
 export const EXTENSION_GLB = '.glb';
 export const EXTENSION_HTML = '.html';
 export const EXTENSION_JSON = '.json';
+export const EXTENSION_TXT = '.txt';
 
 type Cluster = {
   name: string;

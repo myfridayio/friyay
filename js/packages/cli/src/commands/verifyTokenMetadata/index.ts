@@ -53,11 +53,11 @@ export const verifyAssets = ({ files, uploadElementsCount }) => {
   const parsedNumber = parseInt(uploadElementsCount, 10);
   const elemCount = parsedNumber ?? imgFileCount;
 
-  if (imgFileCount !== jsonFileCount) {
-    throw new Error(
-      `number of img files (${imgFileCount}) is different than the number of json files (${jsonFileCount})`,
-    );
-  }
+  // if (imgFileCount !== jsonFileCount) {
+  //   throw new Error(
+  //     `number of img files (${imgFileCount}) is different than the number of json files (${jsonFileCount})`,
+  //   );
+  // }
   if (animationFileCount) {
     if (animationFileCount !== jsonFileCount) {
       throw new Error(
