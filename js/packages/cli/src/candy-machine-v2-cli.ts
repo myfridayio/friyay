@@ -523,7 +523,6 @@ programCommand('verify_upload')
         `Checking ${unverifiedKeys.length} / ${keys.length} items that have yet to be checked...`,
       );
     } else {
-      // Kiril
       log.info(
         `No unverified keys present in config (of ${keys.length} total)`,
       );
