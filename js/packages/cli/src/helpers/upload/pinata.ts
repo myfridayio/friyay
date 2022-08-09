@@ -53,7 +53,6 @@ export async function pinataUpload(
   const manifestJson = await setImageUrlManifest(
     manifestBuffer.toString('utf8'),
     mediaUrl,
-    animationUrl,
   );
 
   fs.writeFileSync('tempJson.json', JSON.stringify(manifestJson));

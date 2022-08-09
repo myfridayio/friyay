@@ -1,6 +1,7 @@
 #!/usr/bin/env ts-node
 import * as fs from 'fs';
 import * as path from 'path';
+import _ from 'underscore';
 import { InvalidArgumentError, program } from 'commander';
 import * as anchor from '@project-serum/anchor';
 
@@ -31,6 +32,7 @@ import {
 
 import { uploadV2 } from './commands/upload';
 import { verifyTokenMetadata } from './commands/verifyTokenMetadata';
+import Manifest from './helpers/Manifest';
 import { loadCache, saveCache } from './helpers/cache';
 import { mintV2 } from './commands/mint';
 import { signMetadata } from './commands/sign';
@@ -43,7 +45,6 @@ import log from 'loglevel';
 import { withdrawV2 } from './commands/withdraw';
 import { updateFromCache } from './commands/updateFromCache';
 import { StorageType } from './helpers/storage-type';
-import { getType } from 'mime';
 import { removeCollection } from './commands/remove-collection';
 import { setCollection } from './commands/set-collection';
 import { withdrawBundlr } from './helpers/upload/arweave-bundle';
@@ -51,20 +52,6 @@ import { CollectionData } from './types';
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes';
 
 program.version('0.0.2');
-const supportedImageTypes = {
-  'image/png': 1,
-  'image/gif': 1,
-  'image/jpeg': 1,
-};
-const supportedAnimationTypes = {
-  'video/mp4': 1,
-  'video/quicktime': 1,
-  'audio/mpeg': 1,
-  'audio/x-flac': 1,
-  'audio/wav': 1,
-  'model/gltf-binary': 1,
-  'text/html': 1,
-};
 
 if (!fs.existsSync(CACHE_PATH)) {
   fs.mkdirSync(CACHE_PATH);
@@ -94,7 +81,9 @@ programCommand('upload')
     '<directory>',
     'Directory containing images named from 0-n',
     val => {
-      return fs.readdirSync(`${val}`).map(file => path.join(val, file));
+      return fs
+        .readdirSync(`${val}`)
+        .map(file => path.join(process.cwd(), val, file));
     },
   )
   .requiredOption(
@@ -147,7 +136,6 @@ programCommand('upload')
       nftStorageKey,
       nftStorageGateway,
       ipfsInfuraProjectId,
-      number,
       ipfsInfuraSecret,
       pinataJwt,
       pinataGateway,
@@ -217,56 +205,23 @@ programCommand('upload')
       secretKey: ipfsInfuraSecret,
     };
 
-    let imageFileCount = 0;
-    let animationFileCount = 0;
-    let jsonFileCount = 0;
+    console.log('in CM2, files = ', files);
 
-    // Filter out any non-supported file types and find the JSON vs Image file count
-    const supportedFiles = files.filter(it => {
-      if (supportedImageTypes[getType(it)]) {
-        imageFileCount++;
-      } else if (supportedAnimationTypes[getType(it)]) {
-        animationFileCount++;
-      } else if (it.endsWith(EXTENSION_JSON)) {
-        jsonFileCount++;
-      } else {
-        log.warn(`WARNING: Skipping unsupported file type ${it}`);
-        return false;
-      }
+    verifyTokenMetadata({ files, uploadElementsCount: '' });
+    const jsonFileCount = files.filter(f => f.endsWith(EXTENSION_JSON)).length;
 
-      return true;
-    });
-
-    if (animationFileCount !== 0 && storage === StorageType.Arweave) {
-      throw new Error(
-        'The "arweave" storage option is incompatible with animation files. Please try again with another storage option using `--storage <option>`.',
-      );
-    }
-
-    if (animationFileCount !== 0 && animationFileCount !== jsonFileCount) {
-      throw new Error(
-        `number of animation files (${animationFileCount}) is different than the number of json files (${jsonFileCount})`,
-      );
-    } else if (imageFileCount !== jsonFileCount) {
-      throw new Error(
-        `number of img files (${imageFileCount}) is different than the number of json files (${jsonFileCount})`,
-      );
-    }
-
-    const elemCount = number ? number : imageFileCount;
-    if (elemCount < imageFileCount) {
-      throw new Error(
-        `max number (${elemCount}) cannot be smaller than the number of images in the source folder (${imageFileCount})`,
-      );
-    }
-
-    if (animationFileCount === 0) {
-      log.info(`Beginning the upload for ${elemCount} (img+json) pairs`);
-    } else {
-      log.info(
-        `Beginning the upload for ${elemCount} (img+animation+json) sets`,
-      );
-    }
+    const targetFiles = files
+      .filter(f => f.endsWith(EXTENSION_JSON))
+      .map(filename => {
+        const config = JSON.parse(
+          fs.readFileSync(filename, 'utf8'),
+        ) as Manifest;
+        const basePath = _.initial(filename.split('/')).join('/');
+        const targetPath = `${basePath}/${config.file}`;
+        log.info(`json ${filename} points to ${targetPath}`);
+        return targetPath;
+      });
+    log.info(`Beginning upload of ${jsonFileCount} (json+txt) sets`);
 
     const collectionMintPubkey = await parseCollectionMintPubkey(
       collectionMint,
@@ -280,10 +235,10 @@ programCommand('upload')
     log.info('started at: ' + startMs.toString());
     try {
       await uploadV2({
-        files: supportedFiles,
+        files: targetFiles,
         cacheName,
         env,
-        totalNFTs: elemCount,
+        totalNFTs: jsonFileCount,
         gatekeeper,
         storage,
         retainAuthority,

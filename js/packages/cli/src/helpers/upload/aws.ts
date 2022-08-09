@@ -36,7 +36,7 @@ async function uploadFile(
 
 export async function awsUpload(
   awsS3Bucket: string,
-  image: string,
+  filename: string,
   animation: string,
   manifestBuffer: Buffer,
 ) {
@@ -59,25 +59,19 @@ export async function awsUpload(
   }
 
   // Copied from ipfsUpload
-  const imageUrl = `${await uploadMedia(image)}?ext=${path
-    .extname(image)
+  const imageUrl = `${await uploadMedia(filename)}?ext=${path
+    .extname(filename)
     .replace('.', '')}`;
-  const animationUrl = animation
-    ? `${await uploadMedia(animation)}?ext=${path
-        .extname(animation)
-        .replace('.', '')}`
-    : undefined;
 
   const manifestJson = await setImageUrlManifest(
     manifestBuffer.toString('utf8'),
     imageUrl,
-    animationUrl,
   );
 
   const updatedManifestBuffer = Buffer.from(JSON.stringify(manifestJson));
 
-  const extensionRegex = new RegExp(`${path.extname(image)}$`);
-  const metadataFilename = image.replace(extensionRegex, '.json');
+  const extensionRegex = new RegExp(`${path.extname(filename)}$`);
+  const metadataFilename = filename.replace(extensionRegex, '.json');
   const metadataUrl = await uploadFile(
     s3Client,
     awsS3Bucket,
@@ -86,5 +80,5 @@ export async function awsUpload(
     updatedManifestBuffer,
   );
 
-  return [metadataUrl, imageUrl, animationUrl];
+  return [metadataUrl, imageUrl];
 }

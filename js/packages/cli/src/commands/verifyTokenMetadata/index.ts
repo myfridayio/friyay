@@ -1,93 +1,43 @@
 import path from 'path';
 import log from 'loglevel';
+import fs from 'fs';
+import _ from 'underscore';
 import { validate } from 'jsonschema';
 import { EXTENSION_JSON } from '../../helpers/constants';
-import {
-  EXTENSION_PNG,
-  EXTENSION_JPG,
-  EXTENSION_GIF,
-} from '../../helpers/constants';
-import {
-  EXTENSION_MP4,
-  EXTENSION_MOV,
-  EXTENSION_MP3,
-  EXTENSION_FLAC,
-  EXTENSION_WAV,
-  EXTENSION_GLB,
-  EXTENSION_HTML,
-} from '../../helpers/constants';
 import tokenMetadataJsonSchema from './token-metadata.schema.json';
-
-type TokenMetadata = {
-  image: string;
-  animation_url: string;
-  properties: {
-    files: { uri: string; type: string }[];
-    creators: { address: string; share: number }[];
-  };
-};
+import Manifest from '../../helpers/Manifest';
 
 export const verifyAssets = ({ files, uploadElementsCount }) => {
-  const imgFileCount = files.filter(it => {
-    return (
-      it.endsWith(EXTENSION_PNG) ||
-      it.endsWith(EXTENSION_JPG) ||
-      it.endsWith(EXTENSION_GIF)
-    );
-  }).length;
-  const animationFileCount = files.filter(it => {
-    return (
-      it.endsWith(EXTENSION_MP4) ||
-      it.endsWith(EXTENSION_MOV) ||
-      it.endsWith(EXTENSION_MP3) ||
-      it.endsWith(EXTENSION_FLAC) ||
-      it.endsWith(EXTENSION_WAV) ||
-      it.endsWith(EXTENSION_GLB) ||
-      it.endsWith(EXTENSION_HTML)
-    );
-  }).length;
-  const jsonFileCount = files.filter(it => {
-    return it.endsWith(EXTENSION_JSON);
-  }).length;
+  files
+    .filter(f => f.endsWith(EXTENSION_JSON))
+    .forEach(filename => {
+      log.info('JSON file: ', filename);
+      const config = JSON.parse(fs.readFileSync(filename, 'utf8')) as Manifest;
+      log.info('CONFIG:', config);
+      const basePath = _.initial(filename.split('/')).join('/');
+      const targetPath = `${basePath}/${config.file}`;
+      if (fs.existsSync(targetPath)) {
+        log.info('looks good');
+      } else {
+        throw new Error(
+          `could not find target ${targetPath} from config ${filename}: no such file`,
+        );
+      }
+    });
+  const jsonFileCount = files.filter(f => f.endsWith(EXTENSION_JSON)).length;
 
   const parsedNumber = parseInt(uploadElementsCount, 10);
-  const elemCount = parsedNumber ?? imgFileCount;
+  const elemCount = parsedNumber ?? jsonFileCount;
 
-  if (imgFileCount !== jsonFileCount) {
+  if (elemCount < jsonFileCount) {
     throw new Error(
-      `number of img files (${imgFileCount}) is different than the number of json files (${jsonFileCount})`,
+      `max number (${elemCount}) cannot be smaller than the number of elements in the source folder (${jsonFileCount})`,
     );
-  }
-  if (animationFileCount) {
-    if (animationFileCount !== jsonFileCount) {
-      throw new Error(
-        `number of animation files (${animationFileCount}) is different than the number of json files (${jsonFileCount})`,
-      );
-    }
-    if (animationFileCount !== imgFileCount) {
-      throw new Error(
-        `number of animation files (${animationFileCount}) is different than the number of img files (${imgFileCount})`,
-      );
-    }
-  }
-
-  if (elemCount < imgFileCount) {
-    throw new Error(
-      `max number (${elemCount}) cannot be smaller than the number of elements in the source folder (${imgFileCount})`,
-    );
-  }
-
-  if (animationFileCount) {
-    log.info(
-      `Verifying token metadata for ${jsonFileCount} (img+animation+json) sets`,
-    );
-  } else {
-    log.info(`Verifying token metadata for ${jsonFileCount} (img+json) pairs`);
   }
 };
 
 export const verifyAggregateShare = (
-  creators: TokenMetadata['properties']['creators'],
+  creators: Manifest['properties']['creators'],
   manifestFile,
 ) => {
   const aggregateShare = creators
@@ -113,7 +63,7 @@ type CollatedCreators = Map<
   { shares: Set<number>; tokenCount: number }
 >;
 export const verifyCreatorCollation = (
-  creators: TokenMetadata['properties']['creators'],
+  creators: Manifest['properties']['creators'],
   collatedCreators: CollatedCreators,
   manifestFile: string,
 ) => {
@@ -200,6 +150,7 @@ export const verifyMetadataManifests = ({ files }) => {
   const manifestFiles = files.filter(
     file => path.extname(file) === EXTENSION_JSON,
   );
+  log.info(manifestFiles);
 
   // Used to keep track of the share allocations for individual creators
   // We will send a warning if we notice discrepancies across the entire collection.
@@ -209,31 +160,23 @@ export const verifyMetadataManifests = ({ files }) => {
   for (const manifestFile of manifestFiles) {
     log.info(`Checking manifest file: ${manifestFile}`);
     // Check the overall schema shape. This is a non-exhaustive check, but guarantees the bare minimum needed for the rest of the commands to succeed.
-    const tokenMetadata = require(manifestFile) as TokenMetadata;
+    const tokenMetadata = require(manifestFile) as Manifest;
     validate(tokenMetadata, tokenMetadataJsonSchema, { throwError: true });
 
     const {
       properties: { creators },
     } = tokenMetadata;
+
     verifyAggregateShare(creators, manifestFile);
 
     verifyCreatorCollation(creators, collatedCreators, manifestFile);
 
     // Check that the `image` and at least one of the files has a URI matching the index of this token.
     const {
-      image,
+      file,
       properties: { files },
     } = tokenMetadata;
-    verifyImageURL(image, files, manifestFile);
-
-    if (Object.prototype.hasOwnProperty.call(tokenMetadata, 'animation_url')) {
-      // Check that the `animation_url` and at least one of the files has a URI matching the index of this token.
-      const {
-        animation_url,
-        properties: { files },
-      } = tokenMetadata;
-      verifyAnimationURL(animation_url, files, manifestFile);
-    }
+    verifyImageURL(file, files, manifestFile);
   }
 
   verifyConsistentShares(collatedCreators);

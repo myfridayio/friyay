@@ -17624,6 +17624,11 @@
     "has-symbols" "^1.0.2"
     "which-boxed-primitive" "^1.0.2"
 
+"underscore@^1.13.4":
+  "integrity" "sha512-BQFnUDuAQ4Yf/cYY5LNrK9NCJFKriaRbD9uR1fTeXnBeoa97W0i41qkZfGO9pSo8I5KzjAcSY2XYtdf0oKd7KQ=="
+  "resolved" "https://registry.npmjs.org/underscore/-/underscore-1.13.4.tgz"
+  "version" "1.13.4"
+
 "unfetch@^4.2.0":
   "integrity" "sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA=="
   "resolved" "https://registry.npmjs.org/unfetch/-/unfetch-4.2.0.tgz"

@@ -65,7 +65,7 @@ type ProcessFileArgs = {
  */
 type Manifest = {
   name: string;
-  image: string;
+  file: string;
   animation_url: string;
   properties: {
     files: Array<{ type: string; uri: string }>;
@@ -319,20 +319,16 @@ function getArweavePathManifestDataItem(
  */
 async function getUpdatedManifest(
   manifestPath: string,
-  imageLink: string,
-  animationLink: string,
+  dataUri: string,
 ): Promise<Manifest> {
   const manifest: Manifest = JSON.parse(
     (await readFile(manifestPath)).toString(),
   );
-  const originalImage = manifest.image;
-  manifest.image = imageLink;
+  const originalImage = manifest.file;
+  manifest.file = dataUri;
   manifest.properties.files.forEach(file => {
-    if (file.uri === originalImage) file.uri = imageLink;
+    if (file.uri === originalImage) file.uri = dataUri;
   });
-  if (animationLink) {
-    manifest.animation_url = animationLink;
-  }
   return manifest;
 }
 
@@ -372,43 +368,11 @@ async function processFiles({
     await (imageDataItem as DataItem).sign(signer);
   }
 
-  let animationContentType = undefined;
-  if (filePair.animation) {
-    animationContentType = getType(filePair.animation);
-    const animationBuffer = await readFile(filePair.animation);
-    if (storageType === StorageType.ArweaveSol) {
-      //@ts-ignore
-      animationDataItem = bundlr.createTransaction(animationBuffer, {
-        tags: imageTags.concat({
-          name: 'Content-Type',
-          value: animationContentType,
-        }),
-      });
-      await (animationDataItem as unknown as BundlrTransaction).sign();
-    } else if (storageType === StorageType.ArweaveBundle) {
-      animationDataItem = await getImageDataItem(
-        signer,
-        animationBuffer,
-        animationContentType,
-      );
-      await (animationDataItem as DataItem).sign(signer);
-    }
-  }
-
-  const imageLink = `https://arweave.net/${imageDataItem.id}?ext=${path
+  const dataUri = `https://arweave.net/${imageDataItem.id}?ext=${path
     .extname(filePair.image)
     .replace('.', '')}`;
-  const animationLink = filePair.animation
-    ? `https://arweave.net/${animationDataItem.id}?ext=${path
-        .extname(filePair.animation)
-        .replace('.', '')}`
-    : undefined;
 
-  const manifest = await getUpdatedManifest(
-    filePair.manifest,
-    imageLink,
-    animationLink,
-  );
+  const manifest = await getUpdatedManifest(filePair.manifest, dataUri);
 
   if (storageType === StorageType.ArweaveSol) {
     //@ts-ignore
@@ -426,8 +390,8 @@ async function processFiles({
     manifestDataItem.id,
     imageDataItem.id,
     `.${getExtension(imageContentType)}`,
-    filePair.animation ? animationDataItem.id : undefined,
-    filePair.animation ? `.${getExtension(animationContentType)}` : undefined,
+    undefined,
+    undefined,
   );
 
   if (storageType === StorageType.ArweaveSol) {
@@ -521,11 +485,8 @@ export async function* makeArweaveBundleUploadGenerator(
 
     return {
       key: asset.index,
-      image: path.join(dirname, `${manifestData.image}`),
-      animation:
-        'animation_url' in manifestData
-          ? path.join(dirname, `${manifestData.animation_url}`)
-          : undefined,
+      image: path.join(dirname, `${manifestData.file}`),
+      animation: undefined,
       manifest: manifestPath,
     };
   });

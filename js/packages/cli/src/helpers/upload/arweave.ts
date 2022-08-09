@@ -60,13 +60,13 @@ export async function arweaveUpload(
   walletKeyPair,
   anchorProgram,
   env,
-  image,
+  filename,
   manifestBuffer, // TODO rename metadataBuffer
   manifest, // TODO rename metadata
   index,
 ) {
-  const imageExt = path.extname(image);
-  const fsStat = await stat(image);
+  const imageExt = path.extname(filename);
+  const fsStat = await stat(filename);
   const estimatedManifestSize = estimateManifestSize([
     `${index}${imageExt}`,
     'metadata.json',
@@ -76,7 +76,7 @@ export async function arweaveUpload(
     manifestBuffer.length,
     estimatedManifestSize,
   ]);
-  log.debug(`lamport cost to store ${image}: ${storageCost}`);
+  log.debug(`lamport cost to store ${filename}: ${storageCost}`);
 
   const instructions = [
     anchor.web3.SystemProgram.transfer({
@@ -98,7 +98,7 @@ export async function arweaveUpload(
   const data = new FormData();
   data.append('transaction', tx['txid']);
   data.append('env', env);
-  data.append('file[]', fs.createReadStream(image), {
+  data.append('file[]', fs.createReadStream(filename), {
     filename: `${index}${imageExt}`,
     contentType: `image/${imageExt.replace('.', '')}`,
   });
@@ -113,12 +113,12 @@ export async function arweaveUpload(
     m => m.filename === `${index}${imageExt}`,
   );
   if (metadataFile?.transactionId) {
-    const link = `https://arweave.net/${metadataFile.transactionId}`;
-    const imageLink = `https://arweave.net/${
+    const metadataUri = `https://arweave.net/${metadataFile.transactionId}`;
+    const dataUri = `https://arweave.net/${
       imageFile.transactionId
     }?ext=${imageExt.replace('.', '')}`;
-    log.debug(`File uploaded: ${link}`);
-    return [link, imageLink];
+    log.debug(`File uploaded: ${metadataUri}`);
+    return [metadataUri, dataUri];
   } else {
     // @todo improve
     throw new Error(`No transaction ID for upload: ${index}`);

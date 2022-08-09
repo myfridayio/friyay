@@ -58,7 +58,6 @@ export async function ipfsUpload(
   const manifestJson = await setImageUrlManifest(
     manifestBuffer.toString('utf8'),
     imageUrl,
-    animationUrl,
   );
 
   const manifestHash = await uploadToIpfs(

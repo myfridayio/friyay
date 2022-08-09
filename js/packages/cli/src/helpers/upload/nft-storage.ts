@@ -6,20 +6,7 @@ import { NFTStorage } from 'nft.storage';
 import { Keypair } from '@solana/web3.js';
 import * as cliProgress from 'cli-progress';
 import { AssetKey } from '../../types';
-
-/**
- * The Manifest object for a given asset.
- * This object holds the contents of the asset's JSON file.
- * Represented here in its minimal form.
- */
-type Manifest = {
-  name: string;
-  image: string;
-  animation_url: string;
-  properties: {
-    files: Array<{ type: string; uri: string }>;
-  };
-};
+import Manifest from '../Manifest';
 
 export type NftStorageBundledAsset = {
   cacheKey: string;
