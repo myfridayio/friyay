@@ -30,7 +30,7 @@ import { chunks, sleep } from '../helpers/various';
 import { pinataUpload } from '../helpers/upload/pinata';
 import { setCollection } from './set-collection';
 import { nftStorageUploadGenerator } from '../helpers/upload/nft-storage';
-import CacheData from '../helpers/CacheData';
+import CacheData, { ItemData } from '../helpers/CacheData';
 import Manifest from '../helpers/Manifest';
 
 export async function uploadV2({
@@ -213,7 +213,7 @@ export async function uploadV2({
   }
 
   const uploadedItems = Object.values(cacheContent.items).filter(
-    (f: { link: string }) => !!f.link,
+    (value: ItemData) => !!value.metadataUri,
   ).length;
 
   log.info(`[${uploadedItems}] out of [${totalNFTs}] items have been uploaded`);
@@ -392,7 +392,7 @@ export async function uploadV2({
     });
 
     const uploadedItems = Object.values(cacheContent.items).filter(
-      (f: { link: string }) => !!f.link,
+      (value: ItemData) => !!value.metadataUri,
     ).length;
     uploadSuccessful = uploadSuccessful && uploadedItems === totalNFTs;
   } else {

@@ -551,9 +551,9 @@ programCommand('verify_upload')
           ]);
           const cacheItem = cacheContent.items[key];
 
-          if (name != cacheItem.name || uri != cacheItem.link) {
+          if (name != cacheItem.name || uri != cacheItem.metadataUri) {
             log.debug(
-              `${key}: (${name}) & (${uri}) != cached (${cacheItem.name}) & (${cacheItem.link}). marking for rerun`,
+              `${key}: (${name}) & (${uri}) != cached (${cacheItem.name}) & (${cacheItem.metadataUri}). marking for rerun`,
             );
             cacheItem.onChain = false;
             allGood = false;

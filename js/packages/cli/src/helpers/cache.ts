@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import CacheData from './CacheData';
 import { CACHE_PATH } from './constants';
 
 export function cachePath(
@@ -17,7 +18,7 @@ export function loadCache(
   env: string,
   cPath: string = CACHE_PATH,
   legacy: boolean = false,
-) {
+): CacheData {
   const path = cachePath(env, cacheName, cPath, legacy);
 
   if (!fs.existsSync(path)) {
@@ -27,7 +28,7 @@ export function loadCache(
     return undefined;
   }
 
-  return JSON.parse(fs.readFileSync(path).toString());
+  return JSON.parse(fs.readFileSync(path).toString()) as CacheData;
 }
 
 export function saveCache(
