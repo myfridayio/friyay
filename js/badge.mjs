@@ -7,6 +7,7 @@ import path from 'path'
 import ora from 'ora'
 import spinners from 'cli-spinners'
 import web3 from '@solana/web3.js'
+import QRCode from 'qrcode'
 
 const ASSETS_DIR = './assets/NFT1'
 const KANYE_IMAGE = './kanye.png'
@@ -46,8 +47,14 @@ const getVerifyUrl = (userId) => {
 }
 
 const generateQRCode = async (verificationUrl) => {
-    const command = `qrencode -s 9 -l H -o ${QR_IMAGE} ${verificationUrl}`
-    await exec(command)
+    return new Promise((resolve, reject) => {
+        QRCode.toFile(QR_IMAGE, verificationUrl, (error) => {
+            if (error) {
+                return reject(error)
+            }
+            return resolve()
+        })
+    })
 }
 
 const generateAssetJSON = (verificationUrl) => {
@@ -124,9 +131,6 @@ const run = async (opts) => {
     }
 
     await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy NFT', 'Assembled Assets for True Yeezy NFT')
-
-    console.log('Assembling Assets for True Yeezy NFT')
-    generateAssets(verificationUrl)
 
     await spinWhile(exec(`${VERIFY_ASSETS_COMMAND} ${ASSETS_DIR}`), 'Verify assets (1/5)')
     await spinWhile(exec(`${UPLOAD_COMMAND} ${ASSETS_DIR}`), 'Upload assets (2/5)')
