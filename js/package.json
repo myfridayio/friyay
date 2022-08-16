@@ -15,7 +15,7 @@
   },
   "scripts": {
     "bootstrap": "lerna link && lerna bootstrap",
-    "build": "lerna run build --ignore=token-entangler --ignore=candy-machine-ui",
+    "build": "./mint.sh",
     "build-web": "lerna run build --stream --scope @oyster/common --scope web",
     "start": "cross-env CI=true lerna run start --scope @oyster/common --stream --parallel --scope web",
     "lint": "prettier -c 'packages/*/{src,test}/**/*.{ts,tsx}' && npm run lint:eslint",
@@ -62,13 +62,18 @@
     ]
   },
   "dependencies": {
+    "@apollo/client": "^3.6.9",
     "@metaplex/arweave-cost": "^1.0.4",
     "cross-env": "^7.0.3",
+    "graphql": "^16.5.0",
     "next": "^11.0.1",
+    "node-fetch": "^2.6.7",
+    "pearl": "^0.0.12",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "underscore": "^1.13.4"
   },
+  "type": "module",
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
@@ -78,6 +83,7 @@
     "@types/webgl2": "^0.0.6",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
+    "apollo": "^2.34.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-react": "^7.25.1",

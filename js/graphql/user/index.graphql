@@ -1,0 +1,12 @@
+type User {
+  email: String
+  name: String
+}
+
+type Query {
+  getUserById(id:ID!): User
+    @rest(
+      endpoint: "https://friday-8bf41-default-rtdb.firebaseio.com/users/$id.json"
+            configuration: "firebase_config"
+    )
+}

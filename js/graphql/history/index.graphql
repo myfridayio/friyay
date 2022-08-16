@@ -1,0 +1,21 @@
+type History {
+  KanyeSpotify: Boolean
+  FollowsKanye: Boolean
+  JeenYuhs: Boolean
+  userId: String
+  user: User
+    @materializer(
+      query: "getUserById"
+      arguments: [{ name: "id", field: "userId" }]
+    )
+}
+
+type Query {
+  getHistoryById(id: ID!): History
+    @rest(
+      endpoint: "https://friday-8bf41-default-rtdb.firebaseio.com/history/$id.json"
+      configuration: "firebase_config"
+    )
+}
+
+

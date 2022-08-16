@@ -1,0 +1,9 @@
+{
+	"data": {
+		"getCustomerById": {
+			"email": "lucas.bill@example.com",
+			"name": "Lucas Bill"
+		}
+	}
+}
+a7b687532078197b669426ba7dadc5

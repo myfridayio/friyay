@@ -692,7 +692,7 @@ programCommand('show')
         )) as CollectionData;
       }
       log.info('...Candy Machine...');
-      log.info('Key:', cacheContent.program.candyMachine);
+      log.info('Key:,', cacheContent.program.candyMachine);
       log.info('1st creator :', candyMachineAddr.toBase58());
       //@ts-ignore
       log.info('authority: ', machine.authority.toBase58());

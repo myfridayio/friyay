@@ -1,0 +1,22 @@
+{
+    "name": "1",
+    "symbol": "",
+    "file": "0.txt",
+    "properties": {
+      "files": [{ "uri": "0.txt", "type": "text" }],
+      "category": "text",
+      "creators": [
+        {
+          "address": "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
+          "share": 100
+        }
+      ]
+    },
+    "description": "",
+    "seller_fee_basis_points": 500,
+    "attributes": [
+      { "trait_type": "category", "value": "demographic" }
+    ],
+    "collection": {}
+  }
+  

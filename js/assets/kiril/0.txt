@@ -1,1 +1,1 @@
-Hello Friday
+https://friday-8bf41-default-rtdb.firebaseio.com/

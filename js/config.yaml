@@ -1,0 +1,6 @@
+configurationset:
+  - configuration:
+      name: firebase_config
+      project_id: "friday-8bf41-default-rtdb"
+      Authorization: 'apikey saopedro::stepzen.net+1000::5c45e0f566f813a29c8d7846ed6b860bbec36a4eb91b1cabb42c681ddb25c685'
+

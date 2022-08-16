@@ -1,0 +1,27 @@
+{
+    "users": {
+      "-N6rOmxa7vOOTpZZSllL": {
+        "email": "hannah@example.com",
+        "name": "Hannah"
+      },
+      "-N6rQgCkbLPB1xElUchT": {
+        "email": "gabby@example.com",
+        "name": "Gabby"
+      }
+    },
+    "history": {
+      "-N6rOvLXK2t39x-Bp0UP": {
+        "KanyeSpotify": true,
+        "FollowsKanye": true,
+        "JeenYuhs": true,
+         "userId": "-N6rOmxa7vOOTpZZSllL"
+      },
+      "-N6rQ_YDMNTjq_mCbhZN": {
+        "KanyeSpotify" : true,
+        "FollowsKanye": false,
+        "JeenYuhs": true,
+         "userId": "-N6rQgCkbLPB1xElUchT"
+      }
+      }
+      
+ }
