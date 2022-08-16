@@ -8,16 +8,17 @@ import ora from 'ora'
 import spinners from 'cli-spinners'
 
 const ASSETS_DIR = './assets/NFT2'
-const KANYE_IMAGE = './kanye.png'
-const QR_IMAGE = './qr.png'
+const QR_IMAGE = './assets/NFT2/0.png'
 const STEPZEN_API_KEY = "saopedro::stepzen.net+1000::5c45e0f566f813a29c8d7846ed6b860bbec36a4eb91b1cabb42c681ddb25c685"
 const KEY_PATH = '~/.config/solana/id.json'
+
 
 const VERIFY_ASSETS_COMMAND = "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_assets"
 const UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -rcm -e devnet -k ${KEY_PATH} -cp ./packages/cli/example-candy-machine-upload-config.json -c example`
 const COLLECT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ${KEY_PATH} -c example`
 const VERIFY_UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ${KEY_PATH} -c example`
 const MINT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ${KEY_PATH} -c example`
+const {mintId} = JSON.parse(fs.readFileSync('badge.json'))
 
 const exec = async (command) => {
     return new Promise((resolve, reject) => {
@@ -36,10 +37,6 @@ const getVerifyUrl = (userId) => {
     return 'https://saopedro.stepzen.net/api/orange-bee/__graphql?query=' + encode(query);
 }
 
-const generateQRCode = async (verificationUrl) => {
-    const command = `qrencode -s 9 -l H -o ${QR_IMAGE} ${verificationUrl}`
-    await exec(command)
-}
 
 const generateAssetJSON = (verificationUrl) => {
     const manifest = {
@@ -51,6 +48,7 @@ const generateAssetJSON = (verificationUrl) => {
             files: [{ uri: "0.png", type: "image/png" }],
             category: "image",
             verificationUrl,
+            mintId,
             creators: [
                 {
                     address: "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
@@ -67,21 +65,15 @@ const generateAssetJSON = (verificationUrl) => {
     fs.writeFileSync(jsonPath, JSON.stringify(manifest, null, 2))
 }
 
-const generateAssetImage = async (verificationUrl) => {
-    await generateQRCode(verificationUrl)
-    const imagePath = path.join(ASSETS_DIR, '0.png')
-    const size = 800
-    const overlaySize = Math.max(200, size / 4)
-    images(KANYE_IMAGE)
-        .size(size)
-        .draw(images(QR_IMAGE).size(overlaySize), size - overlaySize - 20, size - overlaySize - 20)
-        .save(imagePath, { quality: 50 })
-}
+//  const generateAssetImage = async (verificationUrl) => {
+//      await generateQRCode(verificationUrl)
+//      const imagePath = path.join(ASSETS_DIR, '1.png')
+// }
 
-const generateAssets = async (verificationUrl) => {
-    generateAssetJSON(verificationUrl)
-    await generateAssetImage(verificationUrl)
-}
+   const generateAssets = async (verificationUrl) => {
+       generateAssetJSON(verificationUrl)
+       //await generateAssetImage(verificationUrl, mintId)
+   }
 
 const isTrueYeezy = async (userId) => {
     const verifyUrl = getVerifyUrl(userId)
@@ -99,7 +91,7 @@ const isTrueYeezy = async (userId) => {
 
 const run = async (opts) => {
     const { id: userId } = opts
-    console.log('Evaluating', userId, 'for Yeeziness...')
+    console.log('Assembling Assets for License NFT...')
     const qualifies = await isTrueYeezy(userId)
     if (!qualifies) {
         console.log('Ooooh, so sorry, no NFT for you')
@@ -124,12 +116,13 @@ const run = async (opts) => {
     let nftKey = null
     const mint = async () => {
         const output = await exec(MINT_COMMAND)
-        console.log(output)
+        //console.log(output)
         const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
         nftKey = regex.exec(output)[1]
     }
-    await spinWhile(mint(), 'Mint Badge NFT (4/5)', 'Minted Badge (4/5)')
+    await spinWhile(mint(), 'Minting License NFT (4/5)', 'Minted License (4/5)')
     console.log('NFT Key', nftKey)
+    //exec(`open https://explorer.solana.com/address/${mintId}?cluster=devnet`)
 }
 
 program
