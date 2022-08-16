@@ -64,8 +64,6 @@
     ]
   },
   "dependencies": {
-    "@apollo/client": "^3.6.9",
-    "@apollo/link-persisted-queries": "*",
     "@metaplex/arweave-cost": "^1.0.4",
     "alchemy-sdk": "^2.0.2",
     "cross-env": "^7.0.3",
@@ -91,7 +89,6 @@
     "@types/webgl2": "^0.0.6",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "apollo": "^2.34.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-react": "^7.25.1",
