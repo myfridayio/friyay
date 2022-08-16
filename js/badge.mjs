@@ -113,7 +113,11 @@ const run = async (opts) => {
     await exec('yarn candy:verifyUpload')
     console.log('Minting Badge NFT (5/5)')
     const output = await exec('yarn candy:mintOne')
-    console.log(output)
+
+
+    const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
+    const nftKey = regex.exec(x)[1]
+    console.log('NFT generated with key', nftKey)
 }
 
 program
