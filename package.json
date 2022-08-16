@@ -4,5 +4,8 @@
   "main": "index.js",
   "repository": "git@github.com:gkpdkw/friyay.git",
   "author": "Gabriella",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ora": "^6.1.2"
+  }
 }

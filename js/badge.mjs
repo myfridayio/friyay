@@ -4,6 +4,8 @@ import { exec as execSync } from 'child_process'
 import images from 'images'
 import fs from 'fs'
 import path from 'path'
+import ora from 'ora'
+import spinners from 'cli-spinners'
 
 const ASSETS_DIR = './assets/NFT1'
 const KANYE_IMAGE = './kanye.png'
@@ -103,19 +105,24 @@ const run = async (opts) => {
     console.log('Generating Assets...')
     generateAssets(verificationUrl)
 
-    console.log('Verifying assets (1/5)')
-    await exec('yarn candy:verifyAssets')
-    console.log('Uploading assets (2/5)')
-    await exec('yarn candy:upload -rcm')
-    console.log('Setting collection (3/5)')
-    await exec('yarn candy:collect')
-    console.log('Verifying upload (4/5)')
-    await exec('yarn candy:verifyUpload')
-    console.log('Minting Badge NFT (5/5)')
-    const output = await exec('yarn candy:mintOne')
-    const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
-    const nftKey = regex.exec(output)[1]
-    console.log('NFT generated with key', nftKey)
+    const spinWhile = async (promise, text) => {
+        const spinner = ora({ text, spinner: spinners.point, color: 'red' }).start()
+        await promise
+        spinner.succeed()
+    }
+
+    await spinWhile(exec(`yarn candy:verifyAssets ${ASSETS_DIR}`), 'Verify assets (1/5)')
+    await spinWhile(exec(`yarn candy:upload -rcm ${ASSETS_DIR}`), 'Upload assets (2/5)')
+    await spinWhile(exec(`yarn candy:collect`), 'Set collection (3/5)')
+    await spinWhile(exec(`yarn candy:verifyUpload`), 'Verify upload (4/5)')
+    let nftKey = null
+    const mint = async () => {
+        const output = await exec('yarn candy:mintOne')
+        const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
+        nftKey = regex.exec(output)[1]
+    }
+    await spinWhile(mint(), 'Mint Badge NFT (4/5)', 'Minted Badge (4/5)')
+    console.log('NFT Key', nftKey)
 }
 
 program
