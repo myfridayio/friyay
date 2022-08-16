@@ -6,12 +6,19 @@ import fs from 'fs'
 import path from 'path'
 import ora from 'ora'
 import spinners from 'cli-spinners'
+import web3 from '@solana/web3.js'
 
 const ASSETS_DIR = './assets/NFT1'
 const KANYE_IMAGE = './kanye.png'
-const QR_IMAGE = './qr.png'
+const QR_IMAGE = './assets/NFT2/0.png'
 const STEPZEN_API_KEY = "saopedro::stepzen.net+1000::5c45e0f566f813a29c8d7846ed6b860bbec36a4eb91b1cabb42c681ddb25c685"
+const KEY_PATH = '~/.config/solana/id.json'
 
+const VERIFY_ASSETS_COMMAND = "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_assets"
+const UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -rcm -e devnet -k ${KEY_PATH} -cp ./packages/cli/example-candy-machine-upload-config.json -c example`
+const COLLECT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ${KEY_PATH} -c example`
+const VERIFY_UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ${KEY_PATH} -c example`
+const MINT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ${KEY_PATH} -c example`
 
 const exec = async (command) => {
     return new Promise((resolve, reject) => {
@@ -22,6 +29,14 @@ const exec = async (command) => {
             resolve(stdout)
         })
     })
+}
+
+const getMintId = async (txId) => {
+    const solana = new web3.Connection("https://yolo-cool-silence.solana-devnet.discover.quiknode.pro/8a2c88416f21d62a416c6a237638f530d45b6a84/");
+    //const txId = "26Wpe4UQgyvsP1t5qG8LS6DEnyjcWF2mM4rtPqH4ufndEvpNPRafCd6okvQv2Kk1mw8xryE6Pk1R66NryLsjKw17"
+    const info = await solana.getTransaction(txId)
+    const { meta: { postTokenBalances } } = info
+    return postTokenBalances[0].mint
 }
 
 const getVerifyUrl = (userId) => {
@@ -102,27 +117,35 @@ const run = async (opts) => {
     console.log('--=| User qualifies! |=--')
     const verificationUrl = getVerifyUrl(userId)
 
-    console.log('Generating Assets...')
-    generateAssets(verificationUrl)
-
-    const spinWhile = async (promise, text) => {
+    const spinWhile = async (promise, text, after) => {
         const spinner = ora({ text, spinner: spinners.point, color: 'red' }).start()
         await promise
-        spinner.succeed()
+        spinner.succeed(after)
     }
 
-    await spinWhile(exec(`yarn candy:verifyAssets ${ASSETS_DIR}`), 'Verify assets (1/5)')
-    await spinWhile(exec(`yarn candy:upload -rcm ${ASSETS_DIR}`), 'Upload assets (2/5)')
-    await spinWhile(exec(`yarn candy:collect`), 'Set collection (3/5)')
-    await spinWhile(exec(`yarn candy:verifyUpload`), 'Verify upload (4/5)')
-    let nftKey = null
+    await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy NFT', 'Assembled Assets for True Yeezy NFT')
+
+    console.log('Assembling Assets for True Yeezy NFT')
+    generateAssets(verificationUrl)
+
+    await spinWhile(exec(`${VERIFY_ASSETS_COMMAND} ${ASSETS_DIR}`), 'Verify assets (1/5)')
+    await spinWhile(exec(`${UPLOAD_COMMAND} ${ASSETS_DIR}`), 'Upload assets (2/5)')
+    await spinWhile(exec(COLLECT_COMMAND), 'Set collection (3/5)')
+    await spinWhile(exec(VERIFY_UPLOAD_COMMAND), 'Verify upload (4/5)')
+    let txId = null
     const mint = async () => {
-        const output = await exec('yarn candy:mintOne')
+        const output = await exec(MINT_COMMAND)
+        // console.log(output)
         const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
-        nftKey = regex.exec(output)[1]
+        txId = regex.exec(output)[1]
     }
-    await spinWhile(mint(), 'Mint Badge NFT (4/5)', 'Minted Badge (4/5)')
-    console.log('NFT Key', nftKey)
+    await spinWhile(mint(), 'Mint Badge NFT (5/5)')
+    console.log('Transaction ID', txId)
+    const mintId = await getMintId(txId)
+    console.log('Mint Key', mintId)
+    const results = { txId, mintId }
+    fs.writeFileSync('./badge.json', JSON.stringify(results))
+    // exec(`open https://explorer.solana.com/address/${mintId}?cluster=devnet`)
 }
 
 program
