@@ -12,14 +12,17 @@ echo "Mint an NFT that points to a URL"
 
 #solana-keygen new -o ~/.config/solana/id.json
 echo "Are you a True Kanye Fan?"
+echo "-------------------------"
+echo "Enter user ID:"
+read USER_ID
+echo ""
 
 APIKEY="saopedro::stepzen.net+1000::5c45e0f566f813a29c8d7846ed6b860bbec36a4eb91b1cabb42c681ddb25c685"
 VERIFICATION_URL=`node verification.js`
 CURL="curl -h \"Authorization: apikey $APIKEY\" $VERIFICATION_URL"
 verify() {
-    curl -H "Authorization: apikey $APIKEY" $VERIFICATION_URL
+    curl --no-progress-meter -H "Authorization: apikey $APIKEY" $VERIFICATION_URL
 }
-#echo $CURL
 OUTPUT=`verify`
 
 #echo $OUTPUT

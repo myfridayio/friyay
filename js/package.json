@@ -16,6 +16,11 @@
   "scripts": {
     "bootstrap": "lerna link && lerna bootstrap",
     "build": "./mint.sh",
+
+    "friday:criteria": "",
+    "friday:badge": "node badge.js",
+    "friday:license": "",
+
     "build-web": "lerna run build --stream --scope @oyster/common --scope web",
     "start": "cross-env CI=true lerna run start --scope @oyster/common --stream --parallel --scope web",
     "lint": "prettier -c 'packages/*/{src,test}/**/*.{ts,tsx}' && npm run lint:eslint",
