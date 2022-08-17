@@ -114,7 +114,7 @@ const run = async (opts) => {
 
 
     const kp = keyPath(userId)
-    await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy NFT', 'Assembled Assets for True Yeezy NFT')
+    await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy License NFT', 'Assembled Assets for True Yeezy License NFT')
     await spinWhile(exec(`${VERIFY_ASSETS_COMMAND} ${ASSETS_DIR}`), 'Verify assets (1/5)')
     await spinWhile(exec(uploadCommand(kp)), 'Upload assets (2/5)')
     await spinWhile(exec(collectCommand(kp)), 'Set collection (3/5)')
