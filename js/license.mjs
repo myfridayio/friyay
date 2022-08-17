@@ -128,6 +128,8 @@ const run = async (opts) => {
     fs.writeFileSync('./license.json', JSON.stringify(results))
     console.log('Transaction ID', txId)
     console.log('Mint Key', mintId)
+    const results = { txId, mintId }
+    fs.writeFileSync('./license.json', JSON.stringify(results))
 }
 
 program
