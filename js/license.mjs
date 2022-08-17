@@ -12,14 +12,16 @@ import web3 from '@solana/web3.js'
 const ASSETS_DIR = './assets/NFT2'
 const QR_IMAGE = './assets/NFT2/0.png'
 const STEPZEN_API_KEY = "saopedro::stepzen.net+1000::5c45e0f566f813a29c8d7846ed6b860bbec36a4eb91b1cabb42c681ddb25c685"
-const KEY_PATH = '~/.config/solana/id.json'
 
+const keyPath = (publicKey) => `${publicKey}.keypair.json`
 
 const VERIFY_ASSETS_COMMAND = "ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_assets"
-const UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -rcm -e devnet -k ${KEY_PATH} -cp ./packages/cli/example-candy-machine-upload-config.json -c example`
-const COLLECT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ${KEY_PATH} -c example`
-const VERIFY_UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ${KEY_PATH} -c example`
-const MINT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ${KEY_PATH} -c example`
+
+const uploadCommand = (keyPath) => `ts-node ./packages/cli/src/candy-machine-v2-cli.ts upload -rcm -e devnet -k ${keyPath} -cp ./packages/cli/example-candy-machine-upload-config.json -c example ${ASSETS_DIR}`
+const collectCommand = (keyPath) => `ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ${keyPath} -c example`
+const verifyUploadCommand = (keyPath) => `ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ${keyPath} -c example`
+const mintCommand = (keyPath) => `ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ${keyPath} -c example`
+
 const {mintId} = JSON.parse(fs.readFileSync('badge.json'))
 
 const exec = async (command) => {
@@ -109,26 +111,29 @@ const run = async (opts) => {
         spinner.succeed()
     }
 
-    await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for License NFT', 'Assembled Assets for License NFT')
 
+
+    const kp = keyPath(userId)
+    await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy NFT', 'Assembled Assets for True Yeezy NFT')
     await spinWhile(exec(`${VERIFY_ASSETS_COMMAND} ${ASSETS_DIR}`), 'Verify assets (1/5)')
-    await spinWhile(exec(`${UPLOAD_COMMAND} ${ASSETS_DIR}`), 'Upload assets (2/5)')
-    await spinWhile(exec(COLLECT_COMMAND), 'Set collection (3/5)')
-    await spinWhile(exec(VERIFY_UPLOAD_COMMAND), 'Verify upload (4/5)')
+    await spinWhile(exec(uploadCommand(kp)), 'Upload assets (2/5)')
+    await spinWhile(exec(collectCommand(kp)), 'Set collection (3/5)')
+    await spinWhile(exec(verifyUploadCommand(kp)), 'Verify upload (4/5)')
     let txId = null
     const mint = async () => {
-        const output = await exec(MINT_COMMAND)
-        //console.log(output)
+        const output = await exec(mintCommand(kp))
+        // console.log(output)
         const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
         txId = regex.exec(output)[1]
     }
     await spinWhile(mint(), 'Mint License NFT (5/5)')
+
     const mintId = await getMintId(txId)
     console.log('Transaction ID', txId)
     console.log('Mint Key', mintId)
     const results = { txId, mintId }
     fs.writeFileSync('./license.json', JSON.stringify(results))
-    console.log('https://explorer.solana.com/address/${mintId}?cluster=devnet')
+    console.log(`https://explorer.solana.com/address/${mintId}?cluster=devnet`)
 }
 
 program
