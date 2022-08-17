@@ -126,6 +126,8 @@ const run = async (opts) => {
     console.log('Transaction ID', txId)
     const mintId = await getMintId(txId)
     console.log('Mint Key', mintId)
+    const results = { txId, mintId }
+    fs.writeFileSync('./license.json', JSON.stringify(results))
 }
 
 program
