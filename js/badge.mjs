@@ -20,7 +20,6 @@ const UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts uploa
 const COLLECT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts set_collection -e devnet -k ${KEY_PATH} -c example`
 const VERIFY_UPLOAD_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ${KEY_PATH} -c example`
 const MINT_COMMAND = `ts-node ./packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ${KEY_PATH} -c example`
-const json = fs.readFileSync('badge.json')
 
 
 const exec = async (command) => {
@@ -153,7 +152,6 @@ const run = async (opts) => {
     // exec(`open https://explorer.solana.com/address/${mintId}?cluster=devnet`)
 }
 
-console.log("got",JSON.parse(json))
 
 program
     .requiredOption('-i, --id <userId>', 'the ID of the user')
