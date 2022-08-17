@@ -145,7 +145,7 @@ const run = async (opts) => {
     await spinWhile(exec(verifyUploadCommand(kp)), 'Verify upload (4/5)')
     let txId = null
     const mint = async () => {
-        const output = await exec(MINT_COMMAND)
+        const output = await exec(mintCommand(kp))
         // console.log(output)
         const regex = /mint_one_token finished ([A-Za-z0-9]+)/g
         txId = regex.exec(output)[1]
@@ -156,7 +156,7 @@ const run = async (opts) => {
     console.log('Mint Key', mintId)
     const results = { txId, mintId }
     fs.writeFileSync('./badge.json', JSON.stringify(results))
-    // exec(`open https://explorer.solana.com/address/${mintId}?cluster=devnet`)
+    console.log('https://explorer.solana.com/address/${mintId}?cluster=devnet')
 }
 
 

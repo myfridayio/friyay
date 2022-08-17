@@ -128,6 +128,7 @@ const run = async (opts) => {
     console.log('Mint Key', mintId)
     const results = { txId, mintId }
     fs.writeFileSync('./license.json', JSON.stringify(results))
+    console.log('https://explorer.solana.com/address/${mintId}?cluster=devnet')
 }
 
 program
