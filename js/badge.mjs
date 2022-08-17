@@ -8,7 +8,7 @@ import ora from 'ora'
 import spinners from 'cli-spinners'
 import web3 from '@solana/web3.js'
 import QRCode from 'qrcode'
-import sharp from 'sharp'
+// import sharp from 'sharp'
 
 const ASSETS_DIR = './assets/NFT1'
 const KANYE_IMAGE = './kanye.png'

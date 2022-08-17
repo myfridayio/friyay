@@ -83,7 +83,6 @@
     "qrcode": "^1.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "sharp": "^0.30.7",
     "tweetnacl": "^1.0.3",
     "underscore": "^1.13.4"
   },
