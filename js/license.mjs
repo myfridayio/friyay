@@ -124,8 +124,6 @@ const run = async (opts) => {
     }
     await spinWhile(mint(), 'Mint License NFT (5/5)')
     const mintId = await getMintId(txId)
-    const results = { txId, mintId }
-    fs.writeFileSync('./license.json', JSON.stringify(results))
     console.log('Transaction ID', txId)
     console.log('Mint Key', mintId)
     const results = { txId, mintId }
