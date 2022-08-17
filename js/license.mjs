@@ -123,9 +123,11 @@ const run = async (opts) => {
         txId = regex.exec(output)[1]
     }
     await spinWhile(mint(), 'Mint License NFT (5/5)')
-    console.log('Transaction ID', txId)
+    //console.log('Transaction ID', txId)
     const mintId = await getMintId(txId)
     console.log('Mint Key', mintId)
+    const results = {  mintId }
+    fs.writeFileSync('./license.json', JSON.stringify(results))
 }
 
 program
