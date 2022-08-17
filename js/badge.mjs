@@ -134,7 +134,6 @@ const run = async (opts) => {
 
     await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy NFT', 'Assembled Assets for True Yeezy NFT')
 
-HEAD
     console.log('Assembling Assets for True Yeezy NFT')
     generateAssets(verificationUrl)
   
