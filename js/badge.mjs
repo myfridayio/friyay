@@ -1,4 +1,3 @@
-
 import { program } from 'commander'
 import { exec as execSync } from 'child_process'
 import images from 'images'
@@ -8,7 +7,7 @@ import ora from 'ora'
 import spinners from 'cli-spinners'
 import web3 from '@solana/web3.js'
 import QRCode from 'qrcode'
-// import sharp from 'sharp'
+import sharp from 'sharp'
 
 const ASSETS_DIR = './assets/NFT1'
 const KANYE_IMAGE = './kanye.png'
@@ -92,13 +91,21 @@ const generateAssetImage = async (verificationUrl) => {
     const imagePath = path.join(ASSETS_DIR, '0.png')
     const size = 800
     const overlaySize = Math.max(200, size / 4)
-    // sharp(KANYE_IMAGE)
-    //     .resize(size, size)
-    //     .composite()
-    images(KANYE_IMAGE)
-        .size(size)
-        .draw(images(QR_IMAGE).size(overlaySize), size - overlaySize - 20, size - overlaySize - 20)
-        .save(imagePath, { quality: 50 })
+    const offset = size - overlaySize - 20
+
+    const qr = await sharp(QR_IMAGE).resize(overlaySize, overlaySize).toBuffer()
+
+    await sharp(KANYE_IMAGE)
+    .resize(size, size)
+    .composite([
+        { input: qr, top: offset, left: offset }
+    ])
+    .toFile(imagePath)
+    
+    // images(KANYE_IMAGE)
+    //     .size(size)
+    //     .draw(images(QR_IMAGE).size(overlaySize), size - overlaySize - 20, size - overlaySize - 20)
+    //     .save(imagePath, { quality: 50 })
 }
 
 const generateAssets = async (verificationUrl) => {
