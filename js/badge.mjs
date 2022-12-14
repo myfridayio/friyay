@@ -1,6 +1,5 @@
 import { program } from 'commander'
 import { exec as execSync } from 'child_process'
-import images from 'images'
 import fs from 'fs'
 import path from 'path'
 import ora from 'ora'
