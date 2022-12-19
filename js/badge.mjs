@@ -1,17 +1,20 @@
 import { program } from 'commander'
 import { exec as execSync } from 'child_process'
-import fs from 'fs'
-import path from 'path'
+import fs, { readdirSync, rename } from 'fs'
+import path, { resolve } from 'path'
 import ora from 'ora'
 import spinners from 'cli-spinners'
 import web3 from '@solana/web3.js'
 import QRCode from 'qrcode'
 import sharp from 'sharp'
+import * as readline from 'readline'
 
 const ASSETS_DIR = './assets/NFT1'
 const KANYE_IMAGE = './kanye.png'
 const QR_IMAGE = './assets/NFT2/0.png'
 const STEPZEN_API_KEY = "saopedro::stepzen.net+1000::5c45e0f566f813a29c8d7846ed6b860bbec36a4eb91b1cabb42c681ddb25c685"
+const _dirname = "./"
+
 
 const keyPath = (publicKey) => `${publicKey}.keypair.json`
 
@@ -33,6 +36,48 @@ const exec = async (command) => {
         })
     })
 }
+
+const getpublicKey = (userId) => {
+    const r1 = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise (resolve => r1.question(userId, ans => {
+        r1.close();
+        resolve(ans);
+        console.log(ans)
+    }))
+}
+
+// const getprivateKey = (userId) => {
+//     const r2 = readline.createInterface({
+//         input: process.stdin,
+//         output: process.stdout,
+//     });
+
+//     return new Promise (resolve => (r2.questions(userId, ans => {
+//         r2.close();
+//         resolve(ans);
+//         console.log(ans)
+//     })))
+// }
+
+//const userId = getpublicKey();
+
+const question = await getpublicKey("What is your Public Key? ");
+// const questions = await getprivateKey("What is your Private Key? ");
+
+const files = fs.readdirSync(_dirname)
+for (const file of files) {
+    if (file.endsWith('.keypair.json')) {
+        fs.renameSync(file, `${question}.keypair.json`)
+        // fs.writeFile(`${question}.keypair.json`, questions)
+        //console.log(file)
+    }
+}
+
+//const keyPath = question
 
 const getMintId = async (txId) => {
     const solana = new web3.Connection("https://yolo-cool-silence.solana-devnet.discover.quiknode.pro/8a2c88416f21d62a416c6a237638f530d45b6a84/");
@@ -72,6 +117,7 @@ const generateAssetJSON = (verificationUrl) => {
             creators: [
                 {
                     address: "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
+                    //address: question,
                     share: 100
                 }
             ]
@@ -127,7 +173,8 @@ const isTrueYeezy = async (userId) => {
 }
 
 const run = async (opts) => {
-    const { id: userId } = opts
+    //const { id: userId } = opts
+    const userId = question
     console.log('Evaluating', userId, 'for Yeeziness...')
     const qualifies = await isTrueYeezy(userId)
     if (!qualifies) {
@@ -144,6 +191,7 @@ const run = async (opts) => {
     }
 
     const kp = keyPath(userId)
+    await spinWhile(getpublicKey, 'Getting wallet ID')
     await spinWhile(generateAssets(verificationUrl), 'Assembling Assets for True Yeezy NFT', 'Assembled Assets for True Yeezy NFT')
     await spinWhile(exec(`${VERIFY_ASSETS_COMMAND} ${ASSETS_DIR}`), 'Verify assets (1/5)')
     await spinWhile(exec(uploadCommand(kp)), 'Upload assets (2/5)')
@@ -167,7 +215,7 @@ const run = async (opts) => {
 
 
 program
-    .requiredOption('-i, --id <userId>', 'the ID of the user')
+    //.requiredOption('-i, --id <userId>', 'the ID of the user')
     .action(run)
 
 await program.parseAsync()
