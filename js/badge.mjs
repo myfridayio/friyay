@@ -116,8 +116,8 @@ const generateAssetJSON = (verificationUrl) => {
             verificationUrl,
             creators: [
                 {
-                    address: "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
-                    //address: question,
+                    //address: "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
+                    address: question,
                     share: 100
                 }
             ]
