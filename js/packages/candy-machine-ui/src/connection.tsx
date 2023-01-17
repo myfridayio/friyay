@@ -19,7 +19,7 @@ interface BlockhashAndFeeCalculator {
   feeCalculator: FeeCalculator;
 }
 
-export const DEFAULT_TIMEOUT = 60000;
+export const DEFAULT_TIMEOUT = 70000;
 
 export const getErrorForTransaction = async (
   connection: Connection,

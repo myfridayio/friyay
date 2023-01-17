@@ -16,7 +16,7 @@ interface FetchProvingProcessWithRetryParams {
 }
 
 const SLEEP_TIMEOUT = 300;
-const REQUEST_TIMEOUT = 15000;
+const REQUEST_ = 15000;
 
 export const fetchProvingProcessWithRetry = async ({
   provingProcessKey,

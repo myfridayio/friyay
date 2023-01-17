@@ -1,22 +1,26 @@
 {
-    "name": "1",
-    "symbol": "",
-    "file": "0.txt",
-    "properties": {
-      "files": [{ "uri": "0.txt", "type": "text" }],
-      "category": "text",
-      "creators": [
-        {
-          "address": "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
-          "share": 100
-        }
-      ]
-    },
-    "description": "",
-    "seller_fee_basis_points": 500,
-    "attributes": [
-      { "trait_type": "category", "value": "demographic" }
+  "name": "1",
+  "symbol": "",
+  "file": "0.png",
+  "image": "0.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "0.png",
+        "type": "image/png"
+      }
     ],
-    "collection": {}
-  }
-  
+    "category": "image",
+    "verificationUrl": "https://saopedro.stepzen.net/api/orange-bee/__graphql?query=%7BgetHistoryById%28id%3A%20%227b423WXM5EDq1sBc5XgWH7jJQ98PG6RA6r4QyE9yij7p%22%29%20%7B%20KanyeSpotify%20FollowsKanye%20JeenYuhs%20userId%20%7D%20%7D",
+    "creators": [
+      {
+        "address": "CV6uQbknPdCVPQunQHqosyvdHJeTuq3629VJdzs8AYjV",
+        "share": 100
+      }
+    ]
+  },
+  "description": "",
+  "seller_fee_basis_points": 500,
+  "attributes": [],
+  "collection": {}
+}
