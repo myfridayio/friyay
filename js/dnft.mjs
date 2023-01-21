@@ -93,16 +93,16 @@ const getVerifyUrl = (userId) => {
     return 'https://saopedro.stepzen.net/api/orange-bee/__graphql?query=' + encode(query);
 }
 
-const generateQRCode = async (verificationUrl) => {
-    return new Promise((resolve, reject) => {
-        QRCode.toFile(QR_IMAGE, verificationUrl, (error) => {
-            if (error) {
-                return reject(error)
-            }
-            return resolve()
-        })
-    })
-}
+// const generateQRCode = async (verificationUrl) => {
+//     return new Promise((resolve, reject) => {
+//         QRCode.toFile(QR_IMAGE, verificationUrl, (error) => {
+//             if (error) {
+//                 return reject(error)
+//             }
+//             return resolve()
+//         })
+//     })
+// }
 
 const generateAssetJSON = (verificationUrl) => {
     const manifest = {
@@ -131,31 +131,31 @@ const generateAssetJSON = (verificationUrl) => {
     fs.writeFileSync(jsonPath, JSON.stringify(manifest, null, 2))
 }
 
-const generateAssetImage = async (verificationUrl) => {
-    await generateQRCode(verificationUrl)
-    const imagePath = path.join(ASSETS_DIR, '0.png')
-    const size = 800
-    const overlaySize = Math.max(200, size / 4)
-    const offset = size - overlaySize - 20
+// const generateAssetImage = async (verificationUrl) => {
+//     await generateQRCode(verificationUrl)
+//     const imagePath = path.join(ASSETS_DIR, '0.png')
+//     const size = 200
+//     const overlaySize = Math.max(200, size / 4)
+//     const offset = size - overlaySize - 20
 
-    const qr = await sharp(QR_IMAGE).resize(overlaySize, overlaySize).toBuffer()
+//     const qr = await sharp(QR_IMAGE).resize(overlaySize, overlaySize).toBuffer()
 
-    await sharp(TWIT_IMAGE)
-    .resize(size, size)
-    .composite([
-        { input: qr, top: offset, left: offset }
-    ])
-    .toFile(imagePath)
+//     await sharp(TWIT_IMAGE)
+//     .resize(size, size)
+//     .composite([
+//         { input: qr, top: offset, left: offset }
+//     ])
+//     .toFile(imagePath)
     
     // images(KANYE_IMAGE)
     //     .size(size)
     //     .draw(images(QR_IMAGE).size(overlaySize), size - overlaySize - 20, size - overlaySize - 20)
     //     .save(imagePath, { quality: 50 })
-}
+//}
 
 const generateAssets = async (verificationUrl) => {
     generateAssetJSON(verificationUrl)
-    await generateAssetImage(verificationUrl)
+    //await generateAssetImage(verificationUrl)
 }
 
 const isTrueFan = async (userId) => {
